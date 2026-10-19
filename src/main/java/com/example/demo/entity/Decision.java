@@ -19,6 +19,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "decisions")
@@ -34,12 +36,14 @@ public class Decision {
     @JoinColumn(name = "transaction_id", referencedColumnName = "transaction_id", nullable = false, unique = true)
     private Transaction transaction;
 
+    @NotNull(message = "Risk score is required")
     @Min(1)
     @Max(100)
     @Column(name = "risk_score", nullable = false)
     private Integer riskScore;
 
     @Column(name = "action_taken", nullable = false)
+    @NotBlank(message = "Action taken is required")
     private String actionTaken;
 
     @JdbcTypeCode(SqlTypes.JSON)
@@ -51,6 +55,7 @@ public class Decision {
     private Map<String, Object> shapReasonCodes;
 
     @Column(name = "latency_ms", nullable = false)
+    @NotNull(message = "Latency is required")
     private Integer latencyMs;
 
     @Min(0)

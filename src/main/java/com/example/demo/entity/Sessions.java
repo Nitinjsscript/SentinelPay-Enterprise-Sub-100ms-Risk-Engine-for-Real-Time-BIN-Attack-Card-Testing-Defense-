@@ -19,7 +19,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(
@@ -63,7 +62,6 @@ public class Sessions {
     private String userAgent;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    @NotNull(message = "Created timestamp cannot be null")
     private LocalDateTime createdAt;
 
     // Non-owning side: mappedBy refers to 'session' field in Transaction

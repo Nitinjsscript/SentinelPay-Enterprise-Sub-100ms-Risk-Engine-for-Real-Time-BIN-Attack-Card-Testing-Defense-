@@ -92,6 +92,14 @@ public class DeviceProfilesController {
     @Operation(summary = "Partially update a device profile", description = "Updates specific fields of a device profile (e.g., risk score, status, or IP address)")
     public ResponseEntity<DeviceProfiles> patchDeviceProfile(@PathVariable("id") Long profileId,
                                                               @RequestBody Map<String, Object> updates) {
+        PatchRequestValidator.validate(updates, Map.of(
+                "deviceFingerprint", PatchRequestValidator.ValueType.STRING,
+                "behavioralRiskScore", PatchRequestValidator.ValueType.NUMBER,
+                "ipAddress", PatchRequestValidator.ValueType.STRING,
+                "osVersion", PatchRequestValidator.ValueType.STRING,
+                "appVersion", PatchRequestValidator.ValueType.STRING,
+                "profileStatus", PatchRequestValidator.ValueType.STRING));
+
         return deviceProfilesRepository.findById(profileId)
                 .map(existingProfile -> {
                     updates.forEach((key, value) -> {

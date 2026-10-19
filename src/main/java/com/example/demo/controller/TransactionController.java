@@ -116,6 +116,13 @@ public class TransactionController {
     @Operation(summary = "Partially update transaction", description = "Updates amount, currency, merchant, MCC, or timestamp")
     public ResponseEntity<Transaction> patchTransaction(@PathVariable("transactionId") UUID transactionId,
                                                         @RequestBody Map<String, Object> updates) {
+        PatchRequestValidator.validate(updates, Map.of(
+                "amount", PatchRequestValidator.ValueType.NUMBER,
+                "currency", PatchRequestValidator.ValueType.STRING,
+                "merchantId", PatchRequestValidator.ValueType.STRING,
+                "mccCode", PatchRequestValidator.ValueType.STRING,
+                "timestamp", PatchRequestValidator.ValueType.LOCAL_DATE_TIME));
+
         return transactionRepository.findById(transactionId)
                 .map(existing -> {
                     updates.forEach((key, value) -> {
