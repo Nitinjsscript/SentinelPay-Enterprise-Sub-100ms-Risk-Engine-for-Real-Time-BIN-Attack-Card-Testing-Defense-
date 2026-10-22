@@ -72,6 +72,15 @@ public class PaymentMethodController {
     public ResponseEntity<PaymentMethods> updatePaymentMethod(@PathVariable("cardToken") String cardToken,
                                                                @Valid @RequestBody PaymentMethods updatedData,
                                                                @RequestParam(value = "userId", required = false) UUID userId) {
+        Accounts requestedAccount = null;
+        if (userId != null) {
+            requestedAccount = accountsRepository.findById(userId).orElse(null);
+            if (requestedAccount == null) {
+                return ResponseEntity.notFound().build();
+            }
+        }
+        Accounts accountToSet = requestedAccount;
+
         return paymentMethodRepository.findById(cardToken)
                 .map(existing -> {
                     existing.setBinNumber(updatedData.getBinNumber());
@@ -80,9 +89,8 @@ public class PaymentMethodController {
                     existing.setCardCountry(updatedData.getCardCountry());
                     existing.setCardStatus(updatedData.getCardStatus());
 
-                    if (userId != null) {
-                        Accounts account = accountsRepository.findById(userId).orElse(null);
-                        existing.setAccount(account);
+                    if (accountToSet != null) {
+                        existing.setAccount(accountToSet);
                     }
 
                     PaymentMethods saved = paymentMethodRepository.save(existing);
@@ -96,6 +104,22 @@ public class PaymentMethodController {
     public ResponseEntity<PaymentMethods> patchPaymentMethod(@PathVariable("cardToken") String cardToken,
                                                              @RequestBody Map<String, Object> updates,
                                                              @RequestParam(value = "userId", required = false) UUID userId) {
+        PatchRequestValidator.validate(updates, Map.of(
+                "binNumber", PatchRequestValidator.ValueType.STRING,
+                "cardType", PatchRequestValidator.ValueType.STRING,
+                "issuerBank", PatchRequestValidator.ValueType.STRING,
+                "cardCountry", PatchRequestValidator.ValueType.STRING,
+                "cardStatus", PatchRequestValidator.ValueType.STRING));
+
+        Accounts requestedAccount = null;
+        if (userId != null) {
+            requestedAccount = accountsRepository.findById(userId).orElse(null);
+            if (requestedAccount == null) {
+                return ResponseEntity.notFound().build();
+            }
+        }
+        Accounts accountToSet = requestedAccount;
+
         return paymentMethodRepository.findById(cardToken)
                 .map(existing -> {
                     updates.forEach((key, value) -> {
@@ -118,8 +142,8 @@ public class PaymentMethodController {
                         }
                     });
 
-                    if (userId != null) {
-                        accountsRepository.findById(userId).ifPresent(existing::setAccount);
+                    if (accountToSet != null) {
+                        existing.setAccount(accountToSet);
                     }
 
                     PaymentMethods saved = paymentMethodRepository.save(existing);

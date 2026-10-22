@@ -74,6 +74,14 @@ public class SessionsController {
             @PathVariable("id") Long id, 
             @RequestBody Map<String, Object> updates) {
 
+        PatchRequestValidator.validate(updates, Map.of(
+                "deviceFingerprint", PatchRequestValidator.ValueType.STRING,
+                "ipAddress", PatchRequestValidator.ValueType.STRING,
+                "userAgent", PatchRequestValidator.ValueType.STRING,
+                "isVpnProxy", PatchRequestValidator.ValueType.BOOLEAN,
+                "asnDatacenterFlag", PatchRequestValidator.ValueType.BOOLEAN,
+                "geoCountry", PatchRequestValidator.ValueType.STRING));
+
         return sessionsRepository.findById(id)
                 .map(existingSession -> {
                     updates.forEach((key, value) -> {

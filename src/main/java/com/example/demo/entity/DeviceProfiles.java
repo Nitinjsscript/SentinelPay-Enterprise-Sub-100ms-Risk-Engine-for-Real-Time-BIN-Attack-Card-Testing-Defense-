@@ -22,7 +22,6 @@ import jakarta.validation.constraints.NotNull;
 @Table(
     name = "device_profiles",
     indexes = {
-        @Index(name = "idx_device_fingerprint", columnList = "device_fingerprint"),
         @Index(name = "idx_profile_status", columnList = "profile_status")
     }
 )
@@ -34,7 +33,8 @@ public class DeviceProfiles {
     @Column(name = "profile_id")
     private Long profileId;
 
-    @Column(name = "device_fingerprint", unique = true)
+    @Column(name = "device_fingerprint", nullable = false, unique = true)
+    @NotEmpty(message = "Device fingerprint cannot be empty")
     private String deviceFingerprint;
 
     @Column(name = "created_at", nullable = false, updatable = false)

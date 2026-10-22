@@ -85,6 +85,13 @@ public class AccountsController {
     @Operation(summary = "Partially update an account", description = "Updates specific fields of an account (e.g., kycStatus, isSuspended, or historical metrics)")
     public ResponseEntity<Accounts> patchAccount(@PathVariable("id") UUID userId,
                                                  @RequestBody Map<String, Object> updates) {
+        PatchRequestValidator.validate(updates, Map.of(
+                "homeZip", PatchRequestValidator.ValueType.STRING,
+                "kycStatus", PatchRequestValidator.ValueType.STRING,
+                "historicalAvgSpend", PatchRequestValidator.ValueType.NUMBER,
+                "historicalTxCount", PatchRequestValidator.ValueType.INTEGER,
+                "isSuspended", PatchRequestValidator.ValueType.BOOLEAN));
+
         return accountsRepository.findById(userId)
                 .map(existingAccount -> {
                     updates.forEach((key, value) -> {

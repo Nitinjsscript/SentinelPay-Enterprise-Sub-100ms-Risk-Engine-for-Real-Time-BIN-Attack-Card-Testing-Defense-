@@ -97,6 +97,14 @@ public class DecisionController {
     @Operation(summary = "Partially update decision", description = "Updates risk score, action, rule flags, reason codes, latency, or ground-truth label")
     public ResponseEntity<Decision> patchDecision(@PathVariable("id") UUID id,
                                                   @RequestBody Map<String, Object> updates) {
+        PatchRequestValidator.validate(updates, Map.of(
+                "riskScore", PatchRequestValidator.ValueType.INTEGER,
+                "actionTaken", PatchRequestValidator.ValueType.STRING,
+                "ruleFlags", PatchRequestValidator.ValueType.OBJECT,
+                "shapReasonCodes", PatchRequestValidator.ValueType.OBJECT,
+                "latencyMs", PatchRequestValidator.ValueType.INTEGER,
+                "groundTruthLabel", PatchRequestValidator.ValueType.INTEGER));
+
         return decisionRepository.findById(id)
                 .map(existing -> {
                     updates.forEach((key, value) -> {
